@@ -58,7 +58,7 @@ $(BASE_DIR)/%ctl: %ctl.tpl
 	(chmod 775 $@)
 
 $(EBIN_DIR)/%.$(EMULATOR): %.erl $(INCLUDE_FILES)
-	$(ERLC) $(ERLC_FLAGS) -o $(EBIN_DIR) $<
+	$(ERLC) $(ERLC_FLAGS) -o $(dir $(@)) $<
 
 all: $(ALL_FILES)
 
@@ -66,6 +66,6 @@ edoc:
 	$(ERL) -noshell -eval "edoc:application($(APP_NAME), \".\", [${DOC_OPTS}]),init:stop()"
 
 clean:
-	(rm -rf ./*.beam; rm -rf $(EBIN_DIR)/*.beam; rm -f *.app; rm -f *ctl)
+	(rm -rf ./*.beam; rm -rf $(EBIN_DIR)/*.beam; rm -f $(EBIN_DIR)/*.app; rm -f ../$(APP_NAME)ctl)
 
 all: $(EBIN_FILES)

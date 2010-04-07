@@ -47,3 +47,11 @@ code_change(_Old, State, _Extra) ->
 %%
 %% internal API
 %%
+
+%%
+%% EUNIT test
+%%
+-ifdef(EUNIT).
+some_test() ->
+    ?assert(true).
+-endif.

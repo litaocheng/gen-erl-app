@@ -5,7 +5,7 @@ all:
 	(cd src;$(MAKE))
 
 test: clean
-	(cd src;$(MAKE) TEST=true)
+	(cd src;$(MAKE) TEST=true EUNIT=true)
 	(erl -pa ./ebin -eval "eunit:test(\"./ebin\", [verbose]), init:stop()")
 
 comm_test:

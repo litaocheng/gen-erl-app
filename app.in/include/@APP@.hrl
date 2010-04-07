@@ -6,6 +6,9 @@
 %%% @doc @APP@ header file
 %%%
 %%%----------------------------------------------------------------------
+-ifdef(EUNIT).
+-include_lib("eunit/include/eunit.hrl").
+-endif.
 
 -define(WARN2(F, D), io:format(F, D)).
 -define(INFO2(F, D), io:format(F, D)).

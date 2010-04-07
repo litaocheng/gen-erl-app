@@ -1,0 +1,7 @@
+** this is the overview.doc file for the application '@APP@' **
+
+@author @AUTHOR@ <@MAIL@>
+@copyright @COPYRIGHT@
+@version @VERSION@
+@title Welcome to the `@APP@' application!
+@doc `@APP@' is a ...

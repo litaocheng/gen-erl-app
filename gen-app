@@ -1,0 +1,127 @@
+#!/usr/bin/env escript
+%% -*- erlang -*-
+%% used to generate the erlang app framework
+%%! -smp enable +A 16
+-mode(compile).
+-record(opts, {
+    copyright = "",
+    author = "",
+    email = "your@email.com",
+    output = "."
+    }).
+
+-define(P(D), io:format(D)).
+-define(P(F, D), io:format(F, D)).
+
+
+usage() ->
+    ?P("--------------------------------------------------------------------\n"),
+    ?P("Usage:\n"),
+    ?P(" ./gen_app AppName [Option]\n"),
+    ?P("\n"),
+    ?P(" Option:\n"),
+    ?P("   -a             author info (e.g. litaocheng)\n"),
+    ?P("   -c             copyright info (e.g. abc.com)\n"),
+    ?P("   -m             email info (e.g. somebody@gmail.com)\n"),
+    ?P("   -o             application output path. default is current path\n"),
+    ?P("\n"),
+    ?P(" AppName:\n"),
+    ?P("  the application name, must be an erlang atom (e.g. demo, hello)\n"),
+    ?P("\n"),
+    ?P("--------------------------------------------------------------------\n").
+
+main([]) ->
+    usage(),
+    halt(1);
+main([AppName]) ->
+    do_gen_app(AppName, #opts{output = AppName});
+main([AppName | Args]) ->
+    Opts = parse_opts(Args, #opts{}),
+    Output = filename:join([Opts#opts.output, AppName]),
+    do_gen_app(AppName, Opts#opts{output = Output}).
+
+%% parse args
+parse_opts([], Opts) ->
+    Opts;
+parse_opts(["-a", Author | Tail], Opts) ->
+    parse_opts(Tail, Opts#opts{author = Author});
+parse_opts(["-c", Copy | Tail], Opts) ->
+    parse_opts(Tail, Opts#opts{copyright = Copy});
+parse_opts(["-m", Mail | Tail], Opts) ->
+    parse_opts(Tail, Opts#opts{email = Mail});
+parse_opts(["-o", Output | Tail], Opts) ->
+    parse_opts(Tail, Opts#opts{output = Output});
+parse_opts([Unknown | Tail], Opts) ->
+    ?P("*warning* unknown option: ~p", [Unknown]),
+    parse_opts(Tail, Opts).
+    
+%% gen app
+do_gen_app(AppName, Opts = #opts{}) ->
+    check_app_name(AppName),
+    % create dirs
+    create_dirs(AppName, Opts),
+    % create Makefiles
+    create_other_files(AppName, Opts),
+    % do some cleanup
+    do_cleanup().
+
+check_app_name(AppName) ->
+    {ok, MP} = re:compile("^[a-z]+[a-zA-Z0-9_@]*$"),
+    case re:run(AppName, MP) of
+        nomatch ->
+            ?P("the app name is valid, it must be an atom\n"),
+            halt(1);
+        _ ->
+            ok
+    end.
+
+create_dirs(AppName, Opts = #opts{output = Output}) ->
+    ok = filelib:ensure_dir(Output ++ "/"),
+    [begin
+        ok = filelib:ensure_dir(filename:join([Output, P, "*"])) 
+    end || P <- ["ebin", "edoc", "test"]],
+
+    [begin
+        ok = filelib:ensure_dir(filename:join([Output, P, "*"])),
+        Card = filename:join(["app.in", P, "*.*rl"]),
+        Files = filelib:wildcard(Card),
+        [begin
+            FileName = filename:basename(File),
+            DstFile = filename:join([Output, P, FileName]),
+            ok = convert_file(File, convert_filename(DstFile, AppName), AppName, Opts) 
+        end || File <- Files]
+        
+    end || P <- ["include", "src"]].
+
+
+create_other_files(AppName, Opts = #opts{output = Output}) ->
+    [begin
+        Full = filename:join(["app.in", File]),
+        Dir = filename:dirname(File),
+        FileName = filename:basename(File),
+        DstFile = filename:join([Output, Dir, FileName]),
+        ok = convert_file(Full, convert_filename(DstFile, AppName), AppName, Opts) 
+    end || File <- ["Makefile", "vsn.mk", "./src/Makefile", 
+                    "./src/@APP@ctl.tpl", "./src/@APP@.app.src",
+                    "./src/overview.edoc"]].
+
+convert_file(File, DstFile, AppName, Opts) ->
+    ?P("copy file: ~p to: ~p\n", [File, DstFile]),
+    #opts{copyright = CopyRight, 
+        author = Author, 
+        email = Mail
+        } = Opts,
+    {ok, Bin} = file:read_file(File),
+    Bin2 = re:replace(Bin, "@APP@", AppName, [global]),
+    Bin3 = re:replace(Bin2, "@COPYRIGHT@", CopyRight, [global]),
+    Bin4 = re:replace(Bin3, "@AUTHOR@", Author, [global]),
+    Bin5 = re:replace(Bin4, "@MAIL@", Mail, [global]),
+    file:write_file(DstFile, Bin5).
+
+do_cleanup() ->
+    ?P("create app successfully!\n"),
+    ok.
+
+convert_filename(File, AppName) ->
+    File2 = re:replace(File, "@APP@", AppName, [global]),
+    binary_to_list(iolist_to_binary(File2)).

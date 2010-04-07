@@ -1,0 +1,10 @@
+{application, @APP@,
+    [{description, "some description for @APP@"},
+     {vsn, "0.1"},
+     {modules, [@MODULES@]},
+     {registered, []},
+     {applications, [kernel, stdlib, sasl]},
+     {mod, {@APP@_app, []}},
+     {env, []}
+    ]
+}.

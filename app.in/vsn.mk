@@ -1,0 +1,2 @@
+APP_NAME=@APP@
+APP_VSN=0.1

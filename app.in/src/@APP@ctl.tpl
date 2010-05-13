@@ -28,9 +28,8 @@ ERROR_LOG=$LOGS_DIR/@APP@.log
 SASL_LOG=$LOGS_DIR/sasl.log
 
 # define additional environment variables
-MOCHI_EBIN=`dirname $ROOTDIR`/mochiweb/ebin
 ROOT_EBIN=$ROOTDIR/ebin 
-EBINS="$MOCHI_EBIN $ROOT_EBIN"
+EBINS="$ROOT_EBIN"
 #echo "ebins is " $EBINS
 
 # makesure the logs dir exists

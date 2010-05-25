@@ -50,7 +50,8 @@ ALL_FILES = $(ERL_OBJECTS) $(addprefix $(EBIN_DIR)/, $(APP_FILES)) $(CTL_FILES)
 
 $(EBIN_DIR)/%.app: %.app.src
 	@echo "creating .app file... "
-	@sed -e 's:@APP_VSN@:$(APP_VSN):g' \
+	@sed -e 's:@APP_NAME@:$(APP_NAME):g' \
+		-e 's:@APP_VSN@:$(APP_VSN):g' \
 		-e 's:@MODULES@:$(ERL_MODULES_IN_APP):g' -e "s:\`:\':g" -e 's/,]/]/g' $< > $@
 
 $(BASE_DIR)/%ctl: %ctl.tpl

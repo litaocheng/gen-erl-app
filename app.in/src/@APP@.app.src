@@ -1,6 +1,6 @@
-{application, @APP@,
+{application, @APP_NAME@,
     [{description, "some description for @APP@"},
-     {vsn, "0.1"},
+     {vsn, "@APP_VSN@"},
      {modules, [@MODULES@]},
      {registered, []},
      {applications, [kernel, stdlib, sasl]},

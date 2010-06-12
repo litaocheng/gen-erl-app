@@ -103,7 +103,8 @@ create_other_files(AppName, Opts = #opts{output = Output}) ->
         ok = convert_file(Full, convert_filename(DstFile, AppName), AppName, Opts) 
     end || File <- ["Makefile", "vsn.mk", "./src/Makefile", 
                     "./src/@APP@ctl.tpl", "./src/@APP@.app.src",
-                    "./src/overview.edoc"]].
+                    "./src/overview.edoc", 
+                    "./test/test.coverspec"]].
 
 convert_file(File, DstFile, AppName, Opts) ->
     ?P("copy file: ~p to: ~p\n", [File, DstFile]),

@@ -10,7 +10,7 @@ test: clean
 
 comm_test:
 	(mkdir -p ./test/log)
-	(erl -s ct_run script_start -DTEST -logdir `pwd`/test/log -include `pwd`/include -pa `pwd`/ebin -cover test/motown.coverspec -dir . -s init stop)
+	(erl -s ct_run script_start -DTEST -logdir `pwd`/test/log -include `pwd`/include -pa `pwd`/ebin -cover test/test.coverspec -dir . -s init stop)
 
 edoc: 
 	(mkdir -p ./edoc)
